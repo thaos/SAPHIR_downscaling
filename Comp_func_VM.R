@@ -69,7 +69,7 @@ load.packages.custom <- function(x){
   }
 }
 #  Then try/install packages...
-load.packages.custom(packages)
+# load.packages.custom(packages)
 
 detachAllPackages <- function(){
   basic.packages <- c("package:stats","package:graphics","package:grDevices","package:utils","package:datasets","package:methods","package:base")
