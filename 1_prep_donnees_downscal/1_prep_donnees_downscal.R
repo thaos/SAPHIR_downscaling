@@ -118,27 +118,23 @@ prep_donnees_downscal <- function(area, year, month.num, dx = 5, dt = 30)
   # remplacement des NA de RR par -30
   # remplacement des valeurs  inférieures à -30 par -30
   RR <- as.matrix(match_df[, i_RR])
-  i_minus30 <- (is.na(RR) | RR <= -30)
-  RR[i_minus30] <- -30
+  RR[(is.na(RR) | RR <= -30)] <- -30
 
   ## agregation jusqu a 24 km (inclus), le km 25 ne comporte qu une couche de 240m, il est donc exclu du calcul ci apres
-  average_bylayer <- function(RR, valt, layers){
-    RR_bylayer <- matrix(
-      NA,
-      nrow = nrow(RR),
-      ncol = length(layers) - 1
-    )
-    for (ilayer in seq.int(length(layers) - 1)) {
-      RR_l <- RR[, (valt >= layer_RR[ilayer]) & (valt <= layer_RR[ilayer + 1])] 
-      RR_bylayer[, ilayer] <- rowMeans(RR_l)
-    }
-    return(RR_bylayer)
-  }
   valt <- as.numeric(
     substring(colnames(RR), 3, nchar(colnames(RR)))
   )
   layer_RR <- c(1.2, 2:25)
-  RR_bylayer <- average_bylayer(RR, valt, layer_RR)
+  RR_bylayer <- matrix(
+    NA,
+    nrow = nrow(RR),
+    ncol = length(layer_RR) - 1
+  )
+  for (ilayer in seq.int(length(layer_RR) - 1)) {
+    RR_bylayer[, ilayer] <- rowMeans(
+      RR[, (valt >= layer_RR[ilayer]) & (valt <= layer_RR[ilayer + 1])] 
+    )
+  }
   colnames(RR_bylayer) <- paste0("RR", head(layer_RR, -1))
   
   
